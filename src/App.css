@@ -79,12 +79,14 @@ button {
     filter: drop-shadow(0 0 4px blue) drop-shadow(0 0 2px blue);
 }
 
-/* Allele speech bubble — revealed on hover (Figma "Basic - 1"). */
+/* Allele speech bubble — shown via Popover API on hover/focus. */
+@position-try --bubble-below {
+    position-area: block-end center;
+    margin-block-start: 6px;
+    margin-block-end: 0;
+}
+
 .allele-bubble {
-    position: absolute;
-    bottom: calc(100% + 6px);
-    left: 50%;
-    transform: translateX(-50%);
     padding: 4px 10px;
     white-space: nowrap;
     font-family: var(--mono);
@@ -94,11 +96,28 @@ button {
     border: 1px solid var(--border);
     border-radius: 8px;
     box-shadow: var(--shadow);
-    opacity: 0;
-    pointer-events: none;
+    /* Fade in when popover opens */
     transition: opacity 120ms ease;
+    opacity: 1;
 }
 
+@starting-style {
+    .allele-bubble:popover-open {
+        opacity: 0;
+    }
+}
+
+@supports (anchor-name: --x) {
+    .allele-bubble {
+        inset: auto;
+        margin: 0;
+        position-area: block-start center;
+        margin-block-end: 6px;
+        position-try-fallbacks: --bubble-below;
+    }
+}
+
+/* Arrow — points down by default (bubble above blob) */
 .allele-bubble::after {
     content: '';
     position: absolute;
@@ -109,9 +128,20 @@ button {
     border-top-color: var(--bg);
 }
 
-.blob:hover .allele-bubble,
-.blob:focus-visible .allele-bubble {
-    opacity: 1;
+/* Flip arrow when bubble repositions below blob */
+@supports (container-type: anchored) {
+    .allele-bubble {
+        container-type: anchored;
+    }
+
+    @container anchored(fallback: --bubble-below) {
+        .allele-bubble::after {
+            top: auto;
+            bottom: 100%;
+            border-top-color: transparent;
+            border-bottom-color: var(--bg);
+        }
+    }
 }
 
 /* ── Punnett overlay (Figma "Basic - 2") — layout scaffold, not yet wired ── */

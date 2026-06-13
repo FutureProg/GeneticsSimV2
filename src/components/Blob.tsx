@@ -8,17 +8,30 @@ type Props = {
   registerBlob: (creature: Creature, element: HTMLDivElement | null) => void;
 };
 
-/**
- * A single creature: a positioned wrapper (the `.blob` element the physics loop
- * moves) holding the creature art and its hover allele bubble. The wrapper, not
- * the SVG, is `.blob` now — the bubble needs to live inside it so it tracks the
- * blob as it bounces.
- */
+type PopoverElement = HTMLElement & { showPopover(): void; hidePopover(): void };
+
 export function Blob({ creature, onSelect, registerBlob }: Props) {
+  const bubbleId = `allele-${creature.id}`;
+  const anchorName = `--blob-${creature.id}`;
+
+  const showBubble = () => {
+    const el = document.getElementById(bubbleId) as PopoverElement | null;
+    if (el && !el.matches(':popover-open')) el.showPopover();
+  };
+  const hideBubble = () => {
+    const el = document.getElementById(bubbleId) as PopoverElement | null;
+    if (el && el.matches(':popover-open')) el.hidePopover();
+  };
+
   return (
     <div
       className="blob"
       ref={el => registerBlob(creature, el)}
+      style={{ anchorName } as React.CSSProperties}
+      onMouseEnter={showBubble}
+      onMouseLeave={hideBubble}
+      onFocus={showBubble}
+      onBlur={hideBubble}
       onClick={() => onSelect(creature.id)}
       onKeyDown={e => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -29,9 +42,10 @@ export function Blob({ creature, onSelect, registerBlob }: Props) {
       role="button"
       tabIndex={0}
       aria-label={`Creature ${creature.genotype}`}
+      aria-describedby={bubbleId}
     >
       <CreatureSVG className="blob-art" />
-      <AlleleBubble genotype={creature.genotype} />
+      <AlleleBubble id={bubbleId} anchorName={anchorName} genotype={creature.genotype} />
     </div>
   );
 }
