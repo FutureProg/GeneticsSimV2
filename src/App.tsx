@@ -68,7 +68,7 @@ function App() {
       for (let j = i + 1; j < blobs.length; j++)
         collisionDetection(blobs[i], blobs[j]);
 
-    blobsArr.current = blobsArr.current.map(blob => {
+    blobsArr.current.forEach(blob => {
       const { element, x, y } = blob;
       if (x <= 0 && blob.dirX < 0) blob.dirX *= -1;
       if (x >= bounds.current.width - BLOB_SIZE && blob.dirX > 0) blob.dirX *= -1;
@@ -80,7 +80,6 @@ function App() {
       blob.x = nx;
       blob.y = ny;
       element.style.transform = `translate(${nx}px, ${ny}px)`;      
-      return blob;
     });
     requestAnimationFrame(render);
   }
