@@ -120,6 +120,10 @@ function App() {
         <CreatureSVG className="blob" />
         <CreatureSVG className="blob" />
       </div>
+      <div id="action-buttons">
+        <button>Breed</button>
+        <button>Punnett Square</button>
+      </div>
     </main>
   )
 }
