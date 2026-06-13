@@ -118,7 +118,8 @@ export function useBlobSimulation(): BlobSimulation {
           resolveCollision(list[i], list[j]);
 
       for (const blob of list) {
-        if (blob.selected) continue; // selected parents hold still
+        if (blob.selected) continue; // selected parents hold still        
+        if (blob.element.matches(':hover')) continue; // hovered blobs hold still too (for easier clicking)
         bounceWalls(blob, bounds.current);
         step(blob, deltaTime);
         blob.element.style.transform = `translate(${blob.x}px, ${blob.y}px)`;
