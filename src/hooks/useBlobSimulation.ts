@@ -24,6 +24,8 @@ export type BlobSimulation = {
   registerBlob: (creature: Creature, element: HTMLDivElement | null) => void;
   /** Toggle a creature's selected state (max two selected at once). */
   toggleSelect: (id: string) => void;
+  /** Deselect all creatures. */
+  clearSelection: () => void;
   /** Ids of the currently selected parents (0–2). React state, updated on click. */
   selectedIds: string[];
 };
@@ -72,6 +74,14 @@ export function useBlobSimulation(): BlobSimulation {
     },
     [],
   );
+
+  const clearSelection = useCallback(() => {
+    blobs.current.forEach(b => {
+      b.selected = false;
+      b.element.classList.remove('selected');
+    });
+    syncSelected();
+  }, [syncSelected]);
 
   const toggleSelect = useCallback(
     (id: string) => {
@@ -147,5 +157,5 @@ export function useBlobSimulation(): BlobSimulation {
     };
   }, []);
 
-  return { containerRef, registerBlob, toggleSelect, selectedIds };
+  return { containerRef, registerBlob, toggleSelect, clearSelection, selectedIds };
 }

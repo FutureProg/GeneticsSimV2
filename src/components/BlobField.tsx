@@ -12,9 +12,13 @@ type Props = {
  * hands each its ref to the simulation; the rAF loop in the hook moves them.
  */
 export function BlobField({ creatures, sim }: Props) {
-  const { containerRef, toggleSelect, registerBlob } = sim;
+  const { containerRef, toggleSelect, clearSelection, registerBlob } = sim;
   return (
-    <div id="blob-pool" ref={containerRef}>
+    <div
+      id="blob-pool"
+      ref={containerRef}
+      onClick={e => { if (e.target === e.currentTarget) clearSelection(); }}
+    >
       {creatures.map(creature => (
         <Blob
           key={creature.id}
