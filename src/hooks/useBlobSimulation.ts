@@ -127,8 +127,20 @@ export function useBlobSimulation(): BlobSimulation {
     };
     frame.current = requestAnimationFrame(render);
 
+    const handleVisibility = () => {
+      if (document.hidden) {
+        if (frame.current != null) cancelAnimationFrame(frame.current);
+        frame.current = null;
+        lastTime.current = null;
+      } else {
+        frame.current = requestAnimationFrame(render);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
       observer.disconnect();
+      document.removeEventListener('visibilitychange', handleVisibility);
       if (frame.current != null) cancelAnimationFrame(frame.current);
       lastTime.current = null;
     };
