@@ -1,9 +1,9 @@
-import CreatureSVG from './assets/creature.svg';
+import CreatureSVG from './assets/creature.svg?react';
 import './App.css';
 import { useEffect, useRef } from 'react';
 
 type BlobData = {
-  element: HTMLImageElement;
+  element: SVGSVGElement;
   x: number;
   y: number;
   dirX: number;
@@ -12,19 +12,18 @@ type BlobData = {
 
 const BLOB_SIZE = 100 as const;
 
-function App() {  
+function App() {
 
-  const blobsArr = useRef<BlobData[]>([]);    
+  const blobsArr = useRef<BlobData[]>([]);
   const blobsPool = useRef<HTMLDivElement>(null);
   const lastTime = useRef<number>(null);
   const bounds = useRef<{ width: number; height: number }>({ width: window.innerWidth, height: window.innerHeight });
   const resizeObserver = useRef<ResizeObserver>(null);
 
-  const initBlobs = () => {    
+  const initBlobs = () => {
     bounds.current = { width: blobsPool.current?.clientWidth || window.innerWidth, height: blobsPool.current?.clientHeight || window.innerHeight };
-    blobsArr.current = Array.from(document.querySelectorAll<HTMLImageElement>('.blob')).map(element => ({
+    blobsArr.current = Array.from(document.querySelectorAll<SVGSVGElement>('.blob')).map(element => ({
       element,
-      size: { width: element.width, height: element.height },
       x: Math.random() * (bounds.current.width - BLOB_SIZE),
       y: Math.random() * (bounds.current.height - BLOB_SIZE),
       dirX: Math.random() * 2 - 1,
@@ -43,7 +42,6 @@ function App() {
     const dist = Math.sqrt(dx * dx + dy * dy);
     if (dist < BLOB_SIZE && dist > 0) {
       const nx = dx / dist, ny = dy / dist;
-      // Only respond if blobs are approaching each other
       const dvx = blobA.dirX - blobB.dirX;
       const dvy = blobA.dirY - blobB.dirY;
       const dot = dvx * nx + dvy * ny;
@@ -56,7 +54,7 @@ function App() {
     }
   }
 
-  const render = async (currentTime: number) => {
+  const render = (currentTime: number) => {
     if (!blobsPool.current) return;
     if (!blobsArr.current.length) return;
     if (!lastTime.current) lastTime.current = currentTime;
@@ -68,7 +66,7 @@ function App() {
       for (let j = i + 1; j < blobs.length; j++)
         collisionDetection(blobs[i], blobs[j]);
 
-    blobsArr.current.forEach(blob => {
+    blobsArr.current = blobsArr.current.map(blob => {
       const { element, x, y } = blob;
       if (x <= 0 && blob.dirX < 0) blob.dirX *= -1;
       if (x >= bounds.current.width - BLOB_SIZE && blob.dirX > 0) blob.dirX *= -1;
@@ -79,7 +77,8 @@ function App() {
       const ny = y + (blob.dirY * speed * deltaTime);
       blob.x = nx;
       blob.y = ny;
-      element.style.transform = `translate(${nx}px, ${ny}px)`;      
+      element.style.transform = `translate(${nx}px, ${ny}px)`;
+      return blob;
     });
     requestAnimationFrame(render);
   }
@@ -87,28 +86,27 @@ function App() {
   useEffect(() => {
     resizeObserver.current = new ResizeObserver(entries => {
       for (const entry of entries) {
-        if (entry.target === blobsPool.current) {               
+        if (entry.target === blobsPool.current) {
           const { width, height } = entry.contentRect;
           bounds.current = { width, height };
         }
       }
     });
     resizeObserver.current.observe(blobsPool.current!);
-    initBlobs();        
+    initBlobs();
     requestAnimationFrame(render);
-  }, []);  
-  
+  }, []);
 
   return (
     <main>
       <div id="blob-pool" ref={blobsPool}>
-        <img className="blob" src={CreatureSVG} alt="creature" />
-        <img className="blob" src={CreatureSVG} alt="creature" />
-        <img className="blob" src={CreatureSVG} alt="creature" />
-        <img className="blob" src={CreatureSVG} alt="creature" />
+        <CreatureSVG className="blob" />
+        <CreatureSVG className="blob" />
+        <CreatureSVG className="blob" />
+        <CreatureSVG className="blob" />
       </div>
     </main>
   )
 }
 
-export default App
+export default App;
