@@ -1,0 +1,14 @@
+#blob-pool {
+    box-sizing: border-box;
+    position: relative;
+    border: 1px solid red;
+    width: 100dvw;
+    height: 100dvh;    
+}
+
+.blob {
+    position: absolute;
+    z-index: 0;
+    width: 100px;
+    aspect-ratio: 1 / 1;        
+}

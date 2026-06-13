@@ -1,10 +1,88 @@
-import './App.css'
+import CreatureSVG from './assets/creature.svg';
+import './App.css';
+import { useEffect, useRef } from 'react';
 
-function App() {
+type BlobData = {
+  element: HTMLImageElement;
+  x: number;
+  y: number;
+  dirX: number;
+  dirY: number;
+};
+
+function App() {  
+
+  const blobsArr = useRef<BlobData[]>([]);    
+  const blobsPool = useRef<HTMLDivElement>(null);
+  const lastTime = useRef<number>(null);
+  const bounds = useRef<{ width: number; height: number }>({ width: window.innerWidth, height: window.innerHeight });
+  const resizeObserver = useRef<ResizeObserver>(null);
+
+  const initBlobs = () => {    
+    bounds.current = { width: blobsPool.current?.clientWidth || window.innerWidth, height: blobsPool.current?.clientHeight || window.innerHeight };
+    blobsArr.current = Array.from(document.querySelectorAll<HTMLImageElement>('.blob')).map(element => ({
+      element,
+      size: { width: element.width, height: element.height },
+      x: Math.random() * (bounds.current.width - 100),
+      y: Math.random() * (bounds.current.height - 100),
+      dirX: Math.random() * 2 - 1,
+      dirY: Math.random() * 2 - 1
+    }));
+    blobsArr.current.forEach(blob => {
+      blob.element.style.transform = `translate(${blob.x}px, ${blob.y}px)`;
+    });
+  }  
+
+  const render = async (currentTime: number) => {
+    if (!blobsPool.current) return;
+    if (!blobsArr.current.length) return;
+    if (!lastTime.current) lastTime.current = currentTime;
+    const deltaTime = currentTime - lastTime.current;
+    lastTime.current = currentTime;
+
+    blobsArr.current = blobsArr.current.map(blob => {
+
+      const { element, x, y } = blob;
+      if (x <= 0 && blob.dirX < 0) blob.dirX *= -1;
+      if (x >= bounds.current.width - 100 && blob.dirX > 0) blob.dirX *= -1;
+      if (y <= 0 && blob.dirY < 0) blob.dirY *= -1;
+      if (y >= bounds.current.height - 100 && blob.dirY > 0) blob.dirY *= -1;
+      
+      const speed = 0.1; // Adjust the speed as needed
+      const nx = x + (blob.dirX * speed * deltaTime);
+      const ny = y + (blob.dirY * speed * deltaTime);
+      blob.x = nx;
+      blob.y = ny;
+      element.style.transform = `translate(${nx}px, ${ny}px)`;      
+      return blob;
+    });
+    requestAnimationFrame(render);
+  }
+
+  useEffect(() => {
+    resizeObserver.current = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        if (entry.target === blobsPool.current) {               
+          const { width, height } = entry.contentRect;
+          bounds.current = { width, height };
+        }
+      }
+    });
+    resizeObserver.current.observe(blobsPool.current!);
+    initBlobs();        
+    requestAnimationFrame(render);
+  }, []);  
+  
 
   return (
-    <>      
-    </>
+    <main>
+      <div id="blob-pool" ref={blobsPool}>
+        <img className="blob" src={CreatureSVG} alt="creature" />
+        <img className="blob" src={CreatureSVG} alt="creature" />
+        <img className="blob" src={CreatureSVG} alt="creature" />
+        <img className="blob" src={CreatureSVG} alt="creature" />
+      </div>
+    </main>
   )
 }
 
