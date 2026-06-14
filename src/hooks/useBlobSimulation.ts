@@ -28,6 +28,10 @@ export type BlobSimulation = {
   clearSelection: () => void;
   /** Ids of the currently selected parents (0–2). React state, updated on click. */
   selectedIds: string[];
+  /** Pause/unpause the simulation (e.g. for breeding). */
+  togglePaused: (value?: boolean) => void;
+  /** Get the currently selected blobs' data records. */
+  getSelectedBlobs: () => BlobData[];
 };
 
 /**
@@ -43,6 +47,11 @@ export function useBlobSimulation(): BlobSimulation {
   const lastTime = useRef<number | null>(null);
   const frame = useRef<number | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const paused = useRef(false); 
+  const togglePaused = (value?: boolean) => {    
+    paused.current = value ?? !paused.current;      
+    lastTime.current = null; // reset timing to avoid big jumps when resuming
+  };
 
   const syncSelected = useCallback(() => {
     setSelectedIds(
@@ -74,6 +83,10 @@ export function useBlobSimulation(): BlobSimulation {
     },
     [],
   );
+
+  const getSelectedBlobs = () => {
+    return [...blobs.current.values()].filter(b => b.selected);
+  };
 
   const clearSelection = useCallback(() => {
     blobs.current.forEach(b => {
@@ -118,6 +131,11 @@ export function useBlobSimulation(): BlobSimulation {
     observer.observe(container);
 
     const render = (currentTime: number) => {
+      if (paused.current) {
+        lastTime.current = null; // reset timing to avoid big jumps when resuming
+        frame.current = requestAnimationFrame(render);
+        return;
+      }
       if (lastTime.current == null) lastTime.current = currentTime;
       const deltaTime = currentTime - lastTime.current;
       lastTime.current = currentTime;
@@ -157,5 +175,5 @@ export function useBlobSimulation(): BlobSimulation {
     };
   }, []);
 
-  return { containerRef, registerBlob, toggleSelect, clearSelection, selectedIds };
+  return { containerRef, registerBlob, toggleSelect, clearSelection, togglePaused, selectedIds, getSelectedBlobs };
 }
