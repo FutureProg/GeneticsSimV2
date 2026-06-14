@@ -7,23 +7,79 @@
 // later without touching components.
 
 /** e.g. "AaBb". A bare string for now; will become a structured type. */
-export type Genotype = string;
+export type Phenotype = {
+  color?: string;
+  scale?: number;
+};
+
+type AlleleChar<G extends string> = Uppercase<G> | Lowercase<G>;
+export type AlleleIdentifier = AlleleChar<'A' | 'B'>; // e.g. "A" or "a"
+
+export type Allele = {
+  dominant: boolean; // e.g. A=true, a=false
+  gene: AlleleIdentifier; // e.g. "A"
+  variant: AlleleIdentifier; // e.g. "a"
+  phenotype: Phenotype;
+}
+
+export type Genotype<Genes extends string = 'A' | 'B'> = {
+  [G in Genes]: [AlleleChar<G>, AlleleChar<G>];
+};
+
+
+export const AlleleBlue: Allele = {
+  dominant: true,
+  gene: 'B',
+  variant: 'b',
+  phenotype: { color: 'blue' },
+}
+
+export const AlleleRed: Allele = {
+  dominant: false,
+  gene: 'B',
+  variant: 'b',
+  phenotype: { color: 'red' },
+}
+
+export const AlleleBig: Allele = {
+  dominant: true,
+  gene: 'A',
+  variant: 'a',
+  phenotype: { scale: 1.0 },
+}
+
+export const AlleleSmall: Allele = {
+  dominant: false,
+  gene: 'A',
+  variant: 'a',
+  phenotype: { scale: 0.5 },
+}
 
 /**
  * Split a genotype string into its allele pairs, e.g. "AaBb" -> ["Aa", "Bb"].
- * Placeholder: assumes well-formed two-character pairs.
  */
 export function allelePairs(genotype: Genotype): string[] {
   const pairs: string[] = [];
-  for (let i = 0; i < genotype.length; i += 2) pairs.push(genotype.slice(i, i + 2));
+  for (const gene in genotype) {
+    const alleles = genotype[gene as keyof Genotype];
+    pairs.push(alleles.join(''));
+  }
   return pairs;
 }
 
-/** The four gamete combinations a dihybrid parent can contribute. Placeholder. */
+/** The four gamete combinations a dihybrid parent can contribute. */
 export function gametes(genotype: Genotype): string[] {
-  // TODO: derive from genotype. Hard-coded dihybrid markers for layout only.
-  void genotype;
-  return ['AB', 'Ab', 'aB', 'ab'];
+  const pairs = allelePairs(genotype);
+  if (pairs.length !== 2) {
+    throw new Error(`gametes() only supports dihybrids for now; got ${pairs.length} pairs`);
+  }
+  const [pairA, pairB] = pairs;
+  return [
+    pairA[0] + pairB[0],
+    pairA[0] + pairB[1],
+    pairA[1] + pairB[0],
+    pairA[1] + pairB[1],
+  ];
 }
 
 /** TODO: build the Punnett grid of offspring genotypes for parentA × parentB. */
