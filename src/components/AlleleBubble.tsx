@@ -1,4 +1,4 @@
-import { allelePairs, type Genotype } from '../creatures/genetics';
+import { genotypeString, type Genotype } from '../creatures/genetics';
 
 type Props = {
   id: string;
@@ -17,7 +17,7 @@ export function AlleleBubble({ id, anchorName, genotype }: Props) {
       style={{ positionAnchor: anchorName } as React.CSSProperties}
       role="tooltip"
     >
-      {allelePairs(genotype).join(' ')}
+      {genotypeString(genotype)}
     </div>
   );
 }

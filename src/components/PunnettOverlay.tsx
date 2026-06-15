@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import CreatureSVG from '../assets/creature.svg?react';
 import type { Creature } from '../creatures/Creature';
-import { gametes } from '../creatures/genetics';
+import { gametes, genotypeString } from '../creatures/genetics';
 
 type Props = {
   parentA: Creature;
@@ -23,22 +23,24 @@ type Props = {
 export function PunnettOverlay({ parentA, parentB, generation = 'F1', onClose, onBreed }: Props) {
   const rows = gametes(parentA.genotype);
   const cols = gametes(parentB.genotype);
+  const parentAGenotype = genotypeString(parentA.genotype);
+  const parentBGenotype = genotypeString(parentB.genotype);
 
   return (
     <div className="punnett-overlay" role="dialog" aria-modal="true" aria-label="Punnett square">
       <div className="punnett-scrim" onClick={onClose} />
       <div className="punnett-panel">
         <header className="punnett-parents">
-          <span className="genotype">{parentA.genotype}</span>
+          <span className="genotype">{parentAGenotype}</span>
           <CreatureSVG className="punnett-parent-art" />
           <span className="cross">×</span>
           <CreatureSVG className="punnett-parent-art" />
-          <span className="genotype">{parentB.genotype}</span>
+          <span className="genotype">{parentBGenotype}</span>
         </header>
 
         <h2 className="punnett-title">
           <span className="generation-code">{generation}</span>
-          {parentA.genotype} × {parentB.genotype}
+          {parentAGenotype} × {parentBGenotype}
         </h2>
 
         <div className="punnett-grid">

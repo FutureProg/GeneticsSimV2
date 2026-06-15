@@ -9,10 +9,22 @@ import { useBlobSimulation } from "./hooks/useBlobSimulation";
 // Hard-coded starter creatures. Temporary: generations become data-driven once
 // breeding exists (see CLAUDE.md). Genotypes are placeholders for now.
 const INITIAL_CREATURES: Creature[] = [
-  { id: "c1", genotype: "AaBb" },
-  { id: "c2", genotype: "AaBb" },
-  { id: "c3", genotype: "AaBb" },
-  { id: "c4", genotype: "AaBb" },
+  { id: "c1", genotype: {
+    A: ['A', 'a'],
+    B: ['B', 'b'],
+  } },
+  { id: "c2", genotype: {
+    A: ['A', 'a'],
+    B: ['B', 'b'],
+  } },
+  { id: "c3", genotype: {
+    A: ['A', 'a'],
+    B: ['B', 'b'],
+  } },
+  { id: "c4", genotype: {
+    A: ['A', 'a'],
+    B: ['B', 'b'],
+  } },
 ];
 
 function App() {
@@ -30,7 +42,7 @@ function App() {
   return (
     <main>
       <BlobField creatures={INITIAL_CREATURES} sim={sim} />
-      {punnettOpen && sim.getSelectedBlobs().length === 2 && (
+      {punnettOpen && sim.selectedIds.length === 2 && (
         <PunnettOverlay
           onBreed={() => {
             //TODO: breeding — needs the genetics domain.
@@ -38,8 +50,8 @@ function App() {
           onClose={() => {
             togglePunnett(false);
           }}
-          parentA={sim.getSelectedBlobs()[0]?.creature}
-          parentB={sim.getSelectedBlobs()[1]?.creature}
+          parentA={sim.getSelectedBlobs()[0].creature} 
+          parentB={sim.getSelectedBlobs()[1].creature} 
         />
       )}
       <ActionButtons

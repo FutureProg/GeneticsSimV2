@@ -1,5 +1,6 @@
 import CreatureSVG from '../assets/creature.svg?react';
 import type { Creature } from '../creatures/Creature';
+import { genotypeString } from '../creatures/genetics';
 import { AlleleBubble } from './AlleleBubble';
 
 type Props = {
@@ -41,7 +42,7 @@ export function Blob({ creature, onSelect, registerBlob }: Props) {
       }}
       role="button"
       tabIndex={0}
-      aria-label={`Creature ${creature.genotype}`}
+      aria-label={`Creature ${genotypeString(creature.genotype)}`}
       aria-describedby={bubbleId}
     >
       <CreatureSVG className="blob-art" />

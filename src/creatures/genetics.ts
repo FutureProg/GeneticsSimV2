@@ -55,14 +55,25 @@ export const AlleleSmall: Allele = {
   phenotype: { scale: 0.5 },
 }
 
+const AlleleMap = {
+  A: AlleleBig,
+  a: AlleleSmall,
+  B: AlleleBlue,
+  b: AlleleRed,
+} as const;
+
+export function getAllele(alleleChar: AlleleIdentifier): Allele {
+  return AlleleMap[alleleChar];
+}
+
 /**
  * Split a genotype string into its allele pairs, e.g. "AaBb" -> ["Aa", "Bb"].
  */
-export function allelePairs(genotype: Genotype): string[] {
-  const pairs: string[] = [];
+export function allelePairs(genotype: Genotype): AlleleIdentifier[][] {
+  const pairs: AlleleIdentifier[][] = [];
   for (const gene in genotype) {
     const alleles = genotype[gene as keyof Genotype];
-    pairs.push(alleles.join(''));
+    pairs.push([...alleles]);
   }
   return pairs;
 }
@@ -82,11 +93,26 @@ export function gametes(genotype: Genotype): string[] {
   ];
 }
 
+export function genotypeString(genotype: Genotype): string {
+  return [...genotype['A'], ...genotype['B']].join('');
+}
+
+export function phenotype(genotype: Genotype): Phenotype {
+  const pairs = allelePairs(genotype);
+  let phenotype: Phenotype = {};
+  for (const pair of pairs) {
+    const dominant = pair.find(a => getAllele(a).dominant);
+    const winner = dominant ?? pair[0];
+    phenotype = { ...phenotype, ...getAllele(winner).phenotype };
+  }
+  return phenotype;
+}
+
 /** TODO: build the Punnett grid of offspring genotypes for parentA × parentB. */
 export function punnett(a: Genotype, b: Genotype): never {
   void a;
   void b;
-  throw new Error('punnett() not implemented — genetics domain is a placeholder');
+  throw new Error('punnett() not implemented — genetics domain is a placeholder'); 
 }
 
 /** TODO: produce an offspring genotype from two parents. */
