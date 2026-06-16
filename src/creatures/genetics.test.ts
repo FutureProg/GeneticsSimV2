@@ -2,12 +2,9 @@
 
 import type { Genotype } from "./genetics";
 import {
-  allelePairs,
-  breed,
-  gametes,
+  allelePairs, gametes,
   getAllele,
-  phenotype,
-  punnett,
+  phenotype
 } from "./genetics"; // Adjust path if necessary
 
 describe("Genetics Domain Logic", () => {
