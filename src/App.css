@@ -233,14 +233,13 @@ button {
     color: var(--text-h);
 }
 
-.punnett-corner {
-    /* empty top-left cell */
-}
-
 .punnett-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 1px solid var(--border);
     border-radius: 8px;
-    background: var(--code-bg);
+    background: var(--code-bg);    
 }
 
 .punnett-actions {

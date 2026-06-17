@@ -1,7 +1,7 @@
 import { Fragment } from 'react';
 import CreatureSVG from '../assets/creature.svg?react';
 import type { Creature } from '../creatures/Creature';
-import { gametes, genotypeString } from '../creatures/genetics';
+import { gametes, genotypeString, punnett } from '../creatures/genetics';
 
 type Props = {
   parentA: Creature;
@@ -25,6 +25,7 @@ export function PunnettOverlay({ parentA, parentB, generation = 'F1', onClose, o
   const cols = gametes(parentB.genotype);
   const parentAGenotype = genotypeString(parentA.genotype);
   const parentBGenotype = genotypeString(parentB.genotype);
+  const punnettValues = punnett(parentA.genotype, parentB.genotype);
 
   return (
     <div className="punnett-overlay" role="dialog" aria-modal="true" aria-label="Punnett square">
@@ -50,12 +51,13 @@ export function PunnettOverlay({ parentA, parentB, generation = 'F1', onClose, o
               {c}
             </div>
           ))}
-          {rows.map(row => (
+          {rows.map((row, rowIndex) => (
             <Fragment key={`row-${row}`}>
               <div className="punnett-axis">{row}</div>
-              {cols.map(col => (
-                // TODO: render the offspring phenotype preview for row × col.
-                <div key={`${row}-${col}`} className="punnett-cell" />
+              {cols.map((col, colIndex) => (
+                <div key={`${row}-${col}`} className="punnett-cell">
+                  {genotypeString(punnettValues.at(rowIndex, colIndex))}
+                </div>
               ))}
             </Fragment>
           ))}
