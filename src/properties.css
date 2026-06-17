@@ -1,0 +1,20 @@
+@property --creature-x {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+};
+@property --creature-y {
+    syntax: "<length>";
+    inherits: true;
+    initial-value: 0px;
+}
+@property --creature-scale {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 1.0;
+}
+@property --creature-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: white;
+}

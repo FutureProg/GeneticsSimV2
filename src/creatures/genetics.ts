@@ -56,7 +56,7 @@ export const AlleleSmall: Allele = {
   dominant: false,
   gene: 'A',
   variant: 'a',
-  phenotype: { scale: 0.5 },
+  phenotype: { scale: 0.7 },
 }
 
 const AlleleMap = {

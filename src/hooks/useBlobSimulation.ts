@@ -64,6 +64,12 @@ export function useBlobSimulation(): BlobSimulation {
   const renderPhenotypes = (creature: Creature, element: HTMLDivElement) => {
     const pheno = phenotype(creature.genotype);
     element.style.setProperty("--creature-colour", pheno.color ?? 'green');
+    element.style.setProperty("--creature-scale", `${pheno.scale ?? 1}`);
+  }
+
+  const setBlobPosition = (element: HTMLDivElement, x: number, y: number) => {
+    element.style.setProperty('--creature-x', `${x}px`);
+    element.style.setProperty('--creature-y', `${y}px`);    
   }
 
   const registerBlob = useCallback(
@@ -74,7 +80,7 @@ export function useBlobSimulation(): BlobSimulation {
       const existing = blobs.current.get(creature.id);
       if (existing) {
         existing.element = element;
-        element.style.transform = `translate(${existing.x}px, ${existing.y}px)`;
+        setBlobPosition(existing.element, existing.x, existing.y);
         renderPhenotypes(creature, element);
         return;
       }
@@ -135,7 +141,7 @@ export function useBlobSimulation(): BlobSimulation {
         blob.x = pos.x;
         blob.y = pos.y;
         blob.initialized = true;
-        blob.element.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+        setBlobPosition(blob.element, pos.x, pos.y);        
         blob.element.classList.add('visible');
       }
     }
@@ -170,7 +176,7 @@ export function useBlobSimulation(): BlobSimulation {
         if (blob.element.matches(':hover')) continue; // hovered blobs hold still too (for easier clicking)
         bounceWalls(blob, bounds.current);
         step(blob, deltaTime);
-        blob.element.style.transform = `translate(${blob.x}px, ${blob.y}px)`;
+        setBlobPosition(blob.element, blob.x, blob.y);
       }
       frame.current = requestAnimationFrame(render);
     };
