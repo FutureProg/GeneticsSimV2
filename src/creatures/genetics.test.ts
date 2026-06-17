@@ -3,6 +3,7 @@
 import type { Genotype } from "./genetics";
 import {
   allelePairs, gametes,
+  genotypeFromString,
   getAllele,
   phenotype,
   punnett
@@ -79,6 +80,27 @@ describe("Genetics Domain Logic", () => {
 
     it("should throw an error if the genotype is not a dihybrid", () => {
       // Test case for monosomic or other non-dihybrid inputs to verify error handling.
+    });
+  });
+
+  describe("genotypeFromString", () => {
+    it("should correctly parse a genotype string into a Genotype object", () => {
+      // Example input: "AaBb" should yield { A: ["A", "a"], B: ["B", "b"] }
+      const genotypeString = "AaBb";
+      const expectedGenotype: Genotype = {
+        "A": ["A", "a"],
+        "B": ["B", "b"],
+      };
+      const result = genotypeFromString(genotypeString);
+      expect(result).toEqual(expectedGenotype);
+    });
+
+    it("Should throw an error when an invalid genotype string is provided", () => {
+      const badInput = (s: unknown) => () => genotypeFromString(s as never);
+      expect(badInput("AaB")).toThrow();
+      expect(badInput("AaBbCc")).toThrow();
+      expect(badInput("1234")).toThrow();
+      expect(badInput("Aa1b")).toThrow();
     });
   });
 

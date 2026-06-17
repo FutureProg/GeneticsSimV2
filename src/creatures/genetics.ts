@@ -26,6 +26,8 @@ export type Genotype<Genes extends string = 'A' | 'B'> = {
   [G in Genes]: [AlleleChar<G>, AlleleChar<G>];
 };
 
+export type GenotypeString = `${AlleleIdentifier}${AlleleIdentifier}${AlleleIdentifier}${AlleleIdentifier}`;
+
 
 
 
@@ -78,6 +80,21 @@ export function allelePairs(genotype: Genotype): AlleleIdentifier[][] {
     pairs.push([...alleles]);
   }
   return pairs;
+}
+
+
+
+export function genotypeFromString(genotypeStr: GenotypeString): Genotype {
+  if (genotypeStr.length !== 4) {
+    throw new Error(`genotypeFromString() expects a 4-character string like "AaBb"; got "${genotypeStr}"`);
+  }
+  if (!/^[A-Za-z]{4}$/.test(genotypeStr)) {
+    throw new Error(`genotypeFromString() expects only valid allele characters between A and Z. got "${genotypeStr}"`);
+  }
+  return {
+    A: [genotypeStr[0], genotypeStr[1]] as [AlleleChar<"A">, AlleleChar<"A">],
+    B: [genotypeStr[2], genotypeStr[3]] as [AlleleChar<"B">, AlleleChar<"B">],
+  };
 }
 
 /** The four gamete combinations a dihybrid parent can contribute. */
