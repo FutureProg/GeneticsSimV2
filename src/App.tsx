@@ -25,6 +25,10 @@ const INITIAL_CREATURES: Creature[] = [
     A: ['A', 'a'],
     B: ['B', 'b'],
   } },
+  { id: "c5", genotype: {
+    A: ['a', 'a'],
+    B: ['b', 'b'],
+  } },
 ];
 
 function App() {
