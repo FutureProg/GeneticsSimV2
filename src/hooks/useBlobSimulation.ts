@@ -15,6 +15,7 @@ type BlobData = PhysicsBody & {
   creature: Creature;
   element: HTMLDivElement;
   selected: boolean;
+  initialized: boolean;
 };
 
 export type BlobSimulation = {
@@ -70,15 +71,14 @@ export function useBlobSimulation(): BlobSimulation {
         element.style.transform = `translate(${existing.x}px, ${existing.y}px)`;
         return;
       }
-      const pos = randomPosition(bounds.current);
       const data: BlobData = {
         creature,
         element,
         selected: false,
-        ...pos,
+        initialized: false,
+        x: 0, y: 0,
         ...randomHeading(),
       };
-      element.style.transform = `translate(${data.x}px, ${data.y}px)`;
       blobs.current.set(creature.id, data);
     },
     [],
@@ -120,6 +120,18 @@ export function useBlobSimulation(): BlobSimulation {
     if (!container) return;
 
     bounds.current = { width: container.clientWidth, height: container.clientHeight };
+
+    for (const blob of blobs.current.values()) {
+      if (!blob.initialized) {
+        const pos = randomPosition(bounds.current);
+        blob.x = pos.x;
+        blob.y = pos.y;
+        blob.initialized = true;
+        blob.element.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+        blob.element.classList.add('visible');
+      }
+    }
+
     const observer = new ResizeObserver(entries => {
       for (const entry of entries) {
         if (entry.target === container) {
