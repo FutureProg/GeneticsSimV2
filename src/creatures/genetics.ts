@@ -27,6 +27,8 @@ export type Genotype<Genes extends string = 'A' | 'B'> = {
 };
 
 
+
+
 export const AlleleBlue: Allele = {
   dominant: true,
   gene: 'B',
@@ -108,11 +110,27 @@ export function phenotype(genotype: Genotype): Phenotype {
   return phenotype;
 }
 
-/** TODO: build the Punnett grid of offspring genotypes for parentA × parentB. */
-export function punnett(a: Genotype, b: Genotype): never {
-  void a;
-  void b;
-  throw new Error('punnett() not implemented — genetics domain is a placeholder'); 
+export type PunnettGrid = {
+  readonly rowGametes: readonly string[];
+  readonly colGametes: readonly string[];
+  /** Returns the offspring Genotype at position (row, col). */
+  at(row: number, col: number): Genotype;
+};
+
+export function punnett(topGenotype: Genotype, sideGenotype: Genotype): PunnettGrid {
+  return {
+    rowGametes: gametes(sideGenotype),
+    colGametes: gametes(topGenotype),
+    at(row: number, col: number): Genotype<"A" | "B"> {
+      const gameteA = this.rowGametes[row];
+      const gameteB = this.colGametes[col];
+      const genotypeString = gameteA + gameteB;
+      return {
+        A: ([genotypeString[0], genotypeString[2]].toSorted() as [AlleleChar<"A">, AlleleChar<"A">]),
+        B: ([genotypeString[1], genotypeString[3]].toSorted() as [AlleleChar<"B">, AlleleChar<"B">]),
+      };
+    }
+  }
 }
 
 /** TODO: produce an offspring genotype from two parents. */

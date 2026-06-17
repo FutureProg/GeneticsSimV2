@@ -4,7 +4,8 @@ import type { Genotype } from "./genetics";
 import {
   allelePairs, gametes,
   getAllele,
-  phenotype
+  phenotype,
+  punnett
 } from "./genetics"; // Adjust path if necessary
 
 describe("Genetics Domain Logic", () => {
@@ -81,6 +82,26 @@ describe("Genetics Domain Logic", () => {
     });
   });
 
-  describe.todo("punnett");
+  describe("punnett square", () => {
+    it("should create a Punnett grid with correct row and column gametes", () => {
+      const testGenotypeA: Genotype = { "A": ["A", "a"], "B": ["B", "b"] };
+      const testGenotypeB: Genotype = { "A": ["A", "a"], "B": ["B", "b"] };
+      const grid = punnett(testGenotypeA, testGenotypeB);
+
+      expect(grid.rowGametes).toEqual(["AB", "Ab", "aB", "ab"]);
+      expect(grid.colGametes).toEqual(["AB", "Ab", "aB", "ab"]);      
+    });
+    
+    it("should return the correct offspring genotype at each position in the grid", () => {
+      const testGenotypeA: Genotype = { "A": ["A", "a"], "B": ["B", "b"] };
+      const testGenotypeB: Genotype = { "A": ["A", "a"], "B": ["B", "b"] };
+      const grid = punnett(testGenotypeA, testGenotypeB);
+
+      expect(grid.at(0, 0)).toEqual({ "A": ["A", "A"], "B": ["B", "B"] });
+      expect(grid.at(0, 1)).toEqual({ "A": ["A", "A"], "B": ["B", "b"] });
+      expect(grid.at(1, 0)).toEqual({ "A": ["A", "A"], "B": ["B", "b"] });
+      expect(grid.at(1, 1)).toEqual({ "A": ["A", "A"], "B": ["b", "b"] });
+    });
+  });
   describe.todo("breed");
 });
