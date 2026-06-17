@@ -85,11 +85,20 @@ button {
     }
 }
 
+.blob-overlay {
+    inset: 0;
+    position: absolute;
+    mix-blend-mode: color;
+    z-index: 1;    
+}
+
 .blob-art {
+    inset: 0;
     width: 100%;
     height: 100%;
     display: block;
-    pointer-events: none; /* clicks/hover handled by the wrapper */
+    pointer-events: none; /* clicks/hover handled by the wrapper */    
+    z-index: 0;
 }
 
 .blob.selected .blob-art {

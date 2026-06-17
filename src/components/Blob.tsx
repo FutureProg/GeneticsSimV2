@@ -2,6 +2,7 @@ import CreatureSVG from '../assets/creature.svg?react';
 import type { Creature } from '../creatures/Creature';
 import { genotypeString } from '../creatures/genetics';
 import { AlleleBubble } from './AlleleBubble';
+import CreatureOverlaySVG from '../assets/creature-overlay.svg?react';
 
 type Props = {
   creature: Creature;
@@ -45,6 +46,7 @@ export function Blob({ creature, onSelect, registerBlob }: Props) {
       aria-label={`Creature ${genotypeString(creature.genotype)}`}
       aria-describedby={bubbleId}
     >
+      <CreatureOverlaySVG className="blob-overlay" />
       <CreatureSVG className="blob-art" />
       <AlleleBubble id={bubbleId} anchorName={anchorName} genotype={creature.genotype} />
     </div>

@@ -9,6 +9,7 @@ import {
   type Bounds,
   type PhysicsBody,
 } from '../simulation/physics';
+import { phenotype } from '../creatures/genetics';
 
 /** Per-creature runtime record: physics state + its DOM element + selection. */
 type BlobData = PhysicsBody & {
@@ -60,6 +61,11 @@ export function useBlobSimulation(): BlobSimulation {
     );
   }, []);
 
+  const renderPhenotypes = (creature: Creature, element: HTMLDivElement) => {
+    const pheno = phenotype(creature.genotype);
+    element.style.setProperty("--creature-colour", pheno.color ?? 'green');
+  }
+
   const registerBlob = useCallback(
     (creature: Creature, element: HTMLDivElement | null) => {
       // Ignore React's cleanup (null) and re-render churn: keep position, just
@@ -69,6 +75,7 @@ export function useBlobSimulation(): BlobSimulation {
       if (existing) {
         existing.element = element;
         element.style.transform = `translate(${existing.x}px, ${existing.y}px)`;
+        renderPhenotypes(creature, element);
         return;
       }
       const data: BlobData = {
@@ -80,6 +87,7 @@ export function useBlobSimulation(): BlobSimulation {
         ...randomHeading(),
       };
       blobs.current.set(creature.id, data);
+      renderPhenotypes(creature, element);
     },
     [],
   );
