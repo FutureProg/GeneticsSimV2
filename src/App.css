@@ -204,6 +204,7 @@ button {
 
 .punnett-parents {
     display: flex;
+    z-index: 1;
     align-items: center;
     justify-content: center;
     gap: 16px;
@@ -225,11 +226,23 @@ button {
     color: var(--text-h);
 }
 
-.punnett-title {
+.punnett-code-area {    
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    gap: 8px;
     margin: 0;
     text-align: center;
     font-size: 18px;
     color: var(--text-h);
+    grid-column-start: span 2;
+    grid-row-start: span 2;  
+    corner-shape: round;  
+
+    background: oklch(86.07% 0.0001 271.152 / 0.374);
+    border-radius: 8px;
+    padding: 8px;
 }
 
 .generation-code {
@@ -243,10 +256,14 @@ button {
 
 .punnett-grid {
     display: grid;
-    grid-template-columns: repeat(5, 64px);
-    grid-auto-rows: 64px;
+    grid-template-columns: repeat(6, 64px);
+    grid-template-rows: 24px repeat(5, 64px);
     gap: 4px;
     justify-content: center;
+}
+
+.punnett-corner {
+    grid-column-start: span 2;
 }
 
 .punnett-axis {
@@ -268,5 +285,5 @@ button {
 
 .punnett-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;    
 }

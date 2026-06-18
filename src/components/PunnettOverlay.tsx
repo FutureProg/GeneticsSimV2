@@ -28,32 +28,36 @@ export function PunnettOverlay({ parentA, parentB, generation = 'F1', onClose, o
   const punnettValues = punnett(parentA.genotype, parentB.genotype);
 
   return (
-    <div className="punnett-overlay" role="dialog" aria-modal="true" aria-label="Punnett square">
+    <div className="punnett-overlay" role="dialog" aria-modal="true" aria-label="Punnett square">      
+      <div className="punnett-parents">
+        <span className="genotype">{parentAGenotype}</span>
+        <CreatureSVG className="punnett-parent-art" style={{viewTransitionName: "parent-a"}} />
+        <span className="cross">×</span>
+        <CreatureSVG className="punnett-parent-art" style={{viewTransitionName: "parent-b"}} />
+        <span className="genotype">{parentBGenotype}</span>
+      </div>
       <div className="punnett-scrim" onClick={onClose} />
-      <div className="punnett-panel">
-        <header className="punnett-parents">
-          <span className="genotype">{parentAGenotype}</span>
-          <CreatureSVG className="punnett-parent-art" />
-          <span className="cross">×</span>
-          <CreatureSVG className="punnett-parent-art" />
-          <span className="genotype">{parentBGenotype}</span>
-        </header>
-
-        <h2 className="punnett-title">
-          <span className="generation-code">{generation}</span>
-          {parentAGenotype} × {parentBGenotype}
-        </h2>
-
+      <div className="punnett-panel">        
         <div className="punnett-grid">
-          <div className="punnett-corner" aria-hidden />
-          {cols.map(c => (
-            <div key={`col-${c}`} className="punnett-axis">
-              {c}
+          <h2 className="punnett-code-area">
+            <span className="generation-code">{generation}</span>
+            <span>{parentAGenotype} × {parentBGenotype}</span>
+          </h2>
+          {cols.map(col => (            
+            <div key={`col-icon-${col}`} className="punnett-axis">
+              {"icon"}
+            </div>
+          ))}                    
+          {cols.map(col => (            
+            <div key={`col-${col}`} className="punnett-axis">
+              {col}
             </div>
           ))}
+          
           {rows.map((row, rowIndex) => (
             <Fragment key={`row-${row}`}>
-              <div className="punnett-axis">{row}</div>
+              <div className="punnett-axis">{"icon"}</div>
+              <div className="punnett-axis">{row}</div>              
               {cols.map((col, colIndex) => (
                 <div key={`${row}-${col}`} className="punnett-cell">
                   {genotypeString(punnettValues.at(rowIndex, colIndex))}
