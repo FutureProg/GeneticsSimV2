@@ -216,8 +216,10 @@ button {
 }
 
 .punnett-parent-art {
-    width: 80px;
-    height: 80px;
+    position: relative;
+    width: calc(80px * var(--creature-scale, 1));
+    height: calc(80px * var(--creature-scale, 1));
+    aspect-ratio: 1 / 1;
 }
 
 .punnett-parents .cross {

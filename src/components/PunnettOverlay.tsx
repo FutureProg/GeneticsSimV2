@@ -1,7 +1,8 @@
 import { Fragment } from 'react';
 import CreatureSVG from '../assets/creature.svg?react';
+import CreatureOverlaySVG from '../assets/creature-overlay.svg?react';
 import type { Creature } from '../creatures/Creature';
-import { gametes, genotypeString, punnett } from '../creatures/genetics';
+import { gametes, genotypeString, phenotype, punnett } from '../creatures/genetics';
 
 type Props = {
   parentA: Creature;
@@ -26,14 +27,31 @@ export function PunnettOverlay({ parentA, parentB, generation = 'F1', onClose, o
   const parentAGenotype = genotypeString(parentA.genotype);
   const parentBGenotype = genotypeString(parentB.genotype);
   const punnettValues = punnett(parentA.genotype, parentB.genotype);
-
+  const parentAPhenotype = phenotype(parentA.genotype);
+  const parentAStyle = {
+    '--creature-colour': parentAPhenotype.color,
+    '--creature-scale': parentAPhenotype.scale,
+    viewTransitionName: 'parent-a'
+  } as React.CSSProperties
+  const parentBPhenotype = phenotype(parentB.genotype);
+  const parentBStyle = {
+    '--creature-colour': parentBPhenotype.color,
+    '--creature-scale': parentBPhenotype.scale,
+    viewTransitionName: 'parent-b'
+  } as React.CSSProperties
   return (
     <div className="punnett-overlay" role="dialog" aria-modal="true" aria-label="Punnett square">      
       <div className="punnett-parents">
         <span className="genotype">{parentAGenotype}</span>
-        <CreatureSVG className="punnett-parent-art" style={{viewTransitionName: "parent-a"}} />
+        <div className='punnett-parent-art' style={parentAStyle}>
+          <CreatureOverlaySVG className="blob-overlay"/>
+          <CreatureSVG className="blob-art" />
+        </div>
         <span className="cross">×</span>
-        <CreatureSVG className="punnett-parent-art" style={{viewTransitionName: "parent-b"}} />
+        <div className='punnett-parent-art' style={parentBStyle}>
+          <CreatureOverlaySVG className="blob-overlay"/>
+          <CreatureSVG className="blob-art" />
+        </div>
         <span className="genotype">{parentBGenotype}</span>
       </div>
       <div className="punnett-scrim" onClick={onClose} />
