@@ -63,6 +63,18 @@ export function resolveCollision(a: PhysicsBody, b: PhysicsBody): void {
   a.dirY += j * invA * ny;
   b.dirX -= j * invB * nx;
   b.dirY -= j * invB * ny;
+  clampSpeed(a);
+  clampSpeed(b);
+}
+
+/**
+ * Returns the physics body with the absolute value of its directional speed clamped between @param [max=1] and @param [min=0]
+ */
+function clampSpeed(body: PhysicsBody, min = 0, max = 1) {
+  const xSign = Math.sign(body.dirX);
+  const ySign = Math.sign(body.dirY);
+  body.dirX = Math.min(Math.max(min, Math.abs(body.dirX)), max) * xSign;
+  body.dirY = Math.min(Math.max(min, Math.abs(body.dirY)), max) * ySign;
 }
 
 /** Flip velocity when the visual edge of a body hits a wall. */
@@ -72,6 +84,7 @@ export function bounceWalls(body: PhysicsBody, bounds: Bounds): void {
   if (body.x + r >= bounds.width && body.dirX > 0) body.dirX *= -1;
   if (body.y - r <= 0 && body.dirY < 0) body.dirY *= -1;
   if (body.y + r >= bounds.height && body.dirY > 0) body.dirY *= -1;
+  clampSpeed(body);  
 }
 
 const SPEED = 0.1;
