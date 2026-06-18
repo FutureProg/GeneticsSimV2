@@ -9,4 +9,7 @@ export default defineConfig({
     globals: true,
     environment: 'node',
   },
+  build: {
+    cssMinify: "esbuild"
+  }
 })
