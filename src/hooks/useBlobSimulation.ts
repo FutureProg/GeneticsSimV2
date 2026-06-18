@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Creature } from '../creatures/Creature';
 import {
+  BLOB_SIZE,
   bounceWalls,
   randomHeading,
   randomPosition,
@@ -9,7 +10,7 @@ import {
   type Bounds,
   type PhysicsBody,
 } from '../simulation/physics';
-import { phenotype } from '../creatures/genetics';
+import { phenotype, type Phenotype } from '../creatures/genetics';
 
 /** Per-creature runtime record: physics state + its DOM element + selection. */
 type BlobData = PhysicsBody & {
@@ -61,15 +62,19 @@ export function useBlobSimulation(): BlobSimulation {
     );
   }, []);
 
-  const renderPhenotypes = (creature: Creature, element: HTMLDivElement) => {
+  const renderPhenotypes = (creature: Creature, element: HTMLDivElement) : Phenotype => {
     const pheno = phenotype(creature.genotype);
     element.style.setProperty("--creature-colour", pheno.color ?? 'green');
     element.style.setProperty("--creature-scale", `${pheno.scale ?? 1}`);
+    return pheno;
   }
 
-  const setBlobPosition = (element: HTMLDivElement, x: number, y: number) => {
-    element.style.setProperty('--creature-x', `${x}px`);
-    element.style.setProperty('--creature-y', `${y}px`);    
+  // cx, cy are the blob's centre in screen px. The CSS wrapper recentres itself
+  // with translate(-50%, -50%), so we write the raw centre and let the box size
+  // (which tracks --creature-scale) take care of the offset for any scale.
+  const setBlobPosition = (element: HTMLDivElement, cx: number, cy: number) => {
+    element.style.setProperty('--creature-x', `${cx}px`);
+    element.style.setProperty('--creature-y', `${cy}px`);
   }
 
   const registerBlob = useCallback(
@@ -81,15 +86,19 @@ export function useBlobSimulation(): BlobSimulation {
       if (existing) {
         existing.element = element;
         setBlobPosition(existing.element, existing.x, existing.y);
-        renderPhenotypes(creature, element);
+        const pheno = renderPhenotypes(creature, element);        
+        existing.size = BLOB_SIZE * (pheno.scale ?? 1);
         return;
       }
+      const pheno = renderPhenotypes(creature, element);
+      const scale = pheno.scale ?? 1;
       const data: BlobData = {
         creature,
         element,
         selected: false,
         initialized: false,
         x: 0, y: 0,
+        size: BLOB_SIZE * scale,
         ...randomHeading(),
       };
       blobs.current.set(creature.id, data);
@@ -137,7 +146,7 @@ export function useBlobSimulation(): BlobSimulation {
 
     for (const blob of blobs.current.values()) {
       if (!blob.initialized) {
-        const pos = randomPosition(bounds.current);
+        const pos = randomPosition(bounds.current, blob.size);
         blob.x = pos.x;
         blob.y = pos.y;
         blob.initialized = true;
@@ -167,13 +176,18 @@ export function useBlobSimulation(): BlobSimulation {
       lastTime.current = currentTime;
 
       const list = [...blobs.current.values()];
+      // Frozen blobs (selected parents, or hovered for easier clicking) hold
+      // still. Mark them immovable so collisions treat them as infinite mass and
+      // never drift their stored position out of sync with where they're drawn.
+      for (const blob of list)
+        blob.immovable = blob.selected || blob.element.matches(':hover');
+
       for (let i = 0; i < list.length; i++)
         for (let j = i + 1; j < list.length; j++)
           resolveCollision(list[i], list[j]);
 
       for (const blob of list) {
-        if (blob.selected) continue; // selected parents hold still        
-        if (blob.element.matches(':hover')) continue; // hovered blobs hold still too (for easier clicking)
+        if (blob.immovable) continue;
         bounceWalls(blob, bounds.current);
         step(blob, deltaTime);
         setBlobPosition(blob.element, blob.x, blob.y);

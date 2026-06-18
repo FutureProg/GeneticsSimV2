@@ -71,13 +71,14 @@ button {
 .blob {
     position: absolute;
     z-index: 0;
-    width: 100px;
-    height: 100px;
+    width: calc(100px * var(--creature-scale, 1));
+    height: calc(100px * var(--creature-scale, 1));
     aspect-ratio: 1 / 1;
     cursor: pointer;
     opacity: 0;
     transition: opacity 300ms ease;
-    transform: scale(var(--creature-scale, 1)) translate(var(--creature-x, 0), var(--creature-y, 0));
+    /* --creature-x/y are the centre in real px; -50% recentres the box*/
+    transform: translate(var(--creature-x, 0), var(--creature-y, 0)) translate(-50%, -50%);
     &.visible {
         opacity: 1;
     }
