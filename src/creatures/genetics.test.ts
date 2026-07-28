@@ -2,12 +2,13 @@
 
 import type { Genotype } from "./genetics";
 import {
-  allelePairs, gametes,
+  allelePairs, breed,gametes,
   genotypeFromString,
   getAllele,
   phenotype,
   punnett
 } from "./genetics"; // Adjust path if necessary
+const randomSpy = vi.spyOn(Math, 'random');
 
 describe("Genetics Domain Logic", () => {
   // --- Test getAllele ---
@@ -125,5 +126,42 @@ describe("Genetics Domain Logic", () => {
       expect(grid.at(1, 1)).toEqual({ "A": ["A", "A"], "B": ["b", "b"] });
     });
   });
-  describe.todo("breed");
+  describe("breed", () => {
+    describe("given a dominant and recessive parent", () => {
+      const genotypeA: Genotype = { "A": ["A", "A"], "B": ["B", "B"]};
+      const genotypeB: Genotype = { "A": ["a", "a"], "B": ["b", "b"]};
+      it("the child should always have both parent's alleles in the genotypes", () => {
+        for(let i = 0; i < 100; i++) {
+          const child = breed(genotypeA, genotypeB);
+          expect(child.A).toBe(['A', 'a']);
+          expect(child.B).toBe(['B', 'b']);
+        }
+      });    
+    });
+    
+    describe("given two dominant genotypes", () => {
+      const genotypeA: Genotype = { "A": ["A", "A"], "B": ["B", "B"]};
+      const genotypeB: Genotype = { "A": ["A", "A"], "B": ["B", "B"]};
+      it("the child genotype should only have dominant alleles", () => {
+        for(let i = 0; i < 100; i++) {
+          const child = breed(genotypeA, genotypeB);
+          expect(child.A).toBe(['A', 'A']);
+          expect(child.B).toBe(['B', 'B']);
+        }
+      });
+    });
+
+    describe("given two recessive genotypes", () => {
+      const genotypeA: Genotype ={ "A": ["a", "a"], "B": ["b", "b"]};
+      const genotypeB: Genotype = { "A": ["a", "a"], "B": ["b", "b"]};
+      it("the child genotype should only have recessive alleles", () => {
+        for(let i = 0; i < 100; i++) {
+          const child = breed(genotypeA, genotypeB);
+          expect(child.A).toBe(['a', 'a']);
+          expect(child.B).toBe(['b', 'b']);
+        }
+      });
+    });
+
+  });
 });
