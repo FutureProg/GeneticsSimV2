@@ -14,7 +14,7 @@ type Props = {
 };
 
 /**
- * Full-screen Punnett overlay (Figma "Basic - 2"). LAYOUT SCAFFOLD ONLY — the
+ * Full-screen Punnett overlay. LAYOUT SCAFFOLD ONLY — the
  * open/close state machine and the slide-in transition are not wired yet, and
  * the grid cells are placeholders: real offspring previews land with the
  * genetics domain. The component is intentionally self-contained — it draws its
@@ -27,32 +27,30 @@ export function PunnettOverlay({ parentA, parentB, generation = 'F1', onClose, o
   const parentAGenotype = genotypeString(parentA.genotype);
   const parentBGenotype = genotypeString(parentB.genotype);
   const punnettValues = punnett(parentA.genotype, parentB.genotype);
-  const parentAPhenotype = phenotype(parentA.genotype);
-  const parentAStyle = {
-    '--creature-colour': parentAPhenotype.color,
-    '--creature-scale': parentAPhenotype.scale,
-    viewTransitionName: 'parent-a'
-  } as React.CSSProperties
-  const parentBPhenotype = phenotype(parentB.genotype);
-  const parentBStyle = {
-    '--creature-colour': parentBPhenotype.color,
-    '--creature-scale': parentBPhenotype.scale,
-    viewTransitionName: 'parent-b'
-  } as React.CSSProperties
+  const createParentRepresentation = (creature: Creature, viewTransitionSuffix: string) => {
+    const pheno = phenotype(creature.genotype);
+    const styling = {
+      '--creature-colour': pheno.color,
+      '--creature-scale': pheno.scale,
+      viewTransitionName: `parent-${viewTransitionSuffix}`
+    }
+    return (
+      <>
+        <span className="genotype">{genotypeString(creature.genotype)}</span>
+        <div className='punnett-parent-art' style={styling}>
+          <CreatureOverlaySVG className="blob-overlay"/>
+          <CreatureSVG className="blob-art" />
+        </div>
+      </>
+    ) 
+  }  
+
   return (
     <div className="punnett-overlay" role="dialog" aria-modal="true" aria-label="Punnett square">      
       <div className="punnett-parents">
-        <span className="genotype">{parentAGenotype}</span>
-        <div className='punnett-parent-art' style={parentAStyle}>
-          <CreatureOverlaySVG className="blob-overlay"/>
-          <CreatureSVG className="blob-art" />
-        </div>
+        {createParentRepresentation(parentA, 'a')}        
         <span className="cross">×</span>
-        <div className='punnett-parent-art' style={parentBStyle}>
-          <CreatureOverlaySVG className="blob-overlay"/>
-          <CreatureSVG className="blob-art" />
-        </div>
-        <span className="genotype">{parentBGenotype}</span>
+        {createParentRepresentation(parentB, 'b')}
       </div>
       <div className="punnett-scrim" onClick={onClose} />
       <div className="punnett-panel">        
