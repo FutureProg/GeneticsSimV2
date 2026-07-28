@@ -8,7 +8,6 @@ import {
   phenotype,
   punnett
 } from "./genetics"; // Adjust path if necessary
-const randomSpy = vi.spyOn(Math, 'random');
 
 describe("Genetics Domain Logic", () => {
   // --- Test getAllele ---
@@ -127,12 +126,29 @@ describe("Genetics Domain Logic", () => {
     });
   });
   describe("breed", () => {
+
+    it("should default to outputting one genotype", () => {
+      const genotypeA: Genotype = { "A": ["A", "A"], "B": ["B", "B"]};
+      const genotypeB: Genotype = { "A": ["a", "a"], "B": ["b", "b"]};
+      const punn = punnett(genotypeA, genotypeB);
+      expect(breed(punn)).toHaveLength(1);
+    });
+
+    it("should return the correct number of genotypes when specified", () => {
+      const genotypeA: Genotype = { "A": ["A", "A"], "B": ["B", "B"]};
+      const genotypeB: Genotype = { "A": ["a", "a"], "B": ["b", "b"]};
+      const punn = punnett(genotypeA, genotypeB);
+      expect(breed(punn, 10)).toHaveLength(1);
+    });
+
+
     describe("given a dominant and recessive parent", () => {
       const genotypeA: Genotype = { "A": ["A", "A"], "B": ["B", "B"]};
       const genotypeB: Genotype = { "A": ["a", "a"], "B": ["b", "b"]};
+      const punn = punnett(genotypeA, genotypeB);
       it("the child should always have both parent's alleles in the genotypes", () => {
         for(let i = 0; i < 100; i++) {
-          const child = breed(genotypeA, genotypeB);
+          const child = breed(punn)[0];
           expect(child.A).toStrictEqual(['A', 'a']);
           expect(child.B).toStrictEqual(['B', 'b']);
         }
@@ -142,9 +158,10 @@ describe("Genetics Domain Logic", () => {
     describe("given two dominant genotypes", () => {
       const genotypeA: Genotype = { "A": ["A", "A"], "B": ["B", "B"]};
       const genotypeB: Genotype = { "A": ["A", "A"], "B": ["B", "B"]};
+      const punn = punnett(genotypeA, genotypeB);
       it("the child genotype should only have dominant alleles", () => {
         for(let i = 0; i < 100; i++) {
-          const child = breed(genotypeA, genotypeB);
+          const child = breed(punn)[0];
           expect(child.A).toStrictEqual(['A', 'A']);
           expect(child.B).toStrictEqual(['B', 'B']);
         }
@@ -154,9 +171,10 @@ describe("Genetics Domain Logic", () => {
     describe("given two recessive genotypes", () => {
       const genotypeA: Genotype ={ "A": ["a", "a"], "B": ["b", "b"]};
       const genotypeB: Genotype = { "A": ["a", "a"], "B": ["b", "b"]};
+      const punn = punnett(genotypeA, genotypeB);
       it("the child genotype should only have recessive alleles", () => {
         for(let i = 0; i < 100; i++) {
-          const child = breed(genotypeA, genotypeB);
+          const child = breed(punn)[0];
           expect(child.A).toStrictEqual(['a', 'a']);
           expect(child.B).toStrictEqual(['b', 'b']);
         }

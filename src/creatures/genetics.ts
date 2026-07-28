@@ -150,10 +150,13 @@ export function punnett(topGenotype: Genotype, sideGenotype: Genotype): PunnettG
   }
 }
 
-export function breed(genotypeA: Genotype, genotypeB: Genotype): Genotype {
-  const pun = punnett(genotypeA, genotypeB);
-  return pun.at(
-    Math.floor(Math.random() * 4),
-    Math.floor(Math.random() * 4) 
-  );
+export function breed(punettGrid: PunnettGrid, count: number = 1) { 
+  const re = [];
+  for(let i = 0; i < count; i++){
+    re.push(punettGrid.at(
+      Math.floor(Math.random() * 4),
+      Math.floor(Math.random() * 4) 
+    ));
+  }  
+  return re;
 }
