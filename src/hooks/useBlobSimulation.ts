@@ -35,6 +35,8 @@ export type BlobSimulation = {
   togglePaused: (value?: boolean) => void;
   /** Get the currently selected blobs' data records. */
   getSelectedBlobs: () => BlobData[];
+  /** Remove all of the blobs from the simulation **/
+  clearBlobs(): void;
 };
 
 /**
@@ -75,6 +77,10 @@ export function useBlobSimulation(): BlobSimulation {
   const setBlobPosition = (element: HTMLDivElement, cx: number, cy: number) => {
     element.style.setProperty('--creature-x', `${cx}px`);
     element.style.setProperty('--creature-y', `${cy}px`);
+  }
+
+  const clearBlobs = () => {        
+    blobs.current.clear();    
   }
 
   const registerBlob = useCallback(
@@ -215,5 +221,5 @@ export function useBlobSimulation(): BlobSimulation {
     };
   }, []);
 
-  return { containerRef, registerBlob, toggleSelect, clearSelection, togglePaused, selectedIds, getSelectedBlobs };
+  return { containerRef, clearBlobs, registerBlob, toggleSelect, clearSelection, togglePaused, selectedIds, getSelectedBlobs };
 }

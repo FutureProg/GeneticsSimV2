@@ -9,3 +9,10 @@ export type Creature = {
   id: string;
   genotype: Genotype;
 };
+
+export const createCreature = (genotype: Genotype, id?: string) => {
+  return {
+    id: id ?? `c${crypto.randomUUID()}`,
+    genotype
+  }
+};

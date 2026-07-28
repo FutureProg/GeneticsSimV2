@@ -3,8 +3,9 @@ import "./App.css";
 import { ActionButtons } from "./components/ActionButtons";
 import { BlobField } from "./components/BlobField";
 import { PunnettOverlay } from "./components/PunnettOverlay";
-import type { Creature } from "./creatures/Creature";
+import { createCreature, type Creature } from "./creatures/Creature";
 import { useBlobSimulation } from "./hooks/useBlobSimulation";
+import { breed, punnett } from "./creatures/genetics";
 
 // Hard-coded starter creatures. Temporary: generations become data-driven once
 // breeding exists (see CLAUDE.md). Genotypes are placeholders for now.
@@ -34,6 +35,7 @@ const INITIAL_CREATURES: Creature[] = [
 function App() {
   const sim = useBlobSimulation();
   const [punnettOpen, setPunnettOpen] = useState(false);
+  const [creatures, setCreatures] = useState(INITIAL_CREATURES);
   const canAct = sim.selectedIds.length === 2;
 
   const togglePunnett = (value?: boolean) => {
@@ -41,16 +43,22 @@ function App() {
     sim.togglePaused(value ?? !punnettOpen);
   };
 
-  // The Punnett overlay (src/components/PunnettOverlay.tsx) is a layout scaffold;
-  // its open/close state machine and the genetics behind it are not wired yet.
+  const onBreed = () => {
+    const [geno1, geno2] = sim.getSelectedBlobs().map(blob => blob.creature.genotype);
+    const punn = punnett(geno1, geno2);
+    sim.clearBlobs();
+    const newCreatures = breed(punn, Math.floor(3 + (Math.random() * 2)))
+      .map(value => createCreature(value));
+    console.log("Created creatures", newCreatures);
+    setCreatures(newCreatures);
+  }
+
   return (
     <main>
-      <BlobField creatures={INITIAL_CREATURES} sim={sim} />
+      <BlobField creatures={creatures} sim={sim} />
       {punnettOpen && sim.selectedIds.length === 2 && (
         <PunnettOverlay
-          onBreed={() => {
-            //TODO: breeding — needs the genetics domain.
-          }}
+          onBreed={onBreed}
           onClose={() => {
             togglePunnett(false);
           }}
@@ -60,9 +68,7 @@ function App() {
       )}
       <ActionButtons
         canAct={canAct}
-        onBreed={() => {
-          // TODO: breeding — needs the genetics domain.
-        }}
+        onBreed={onBreed}
         onPunnett={() => {
           togglePunnett(true);
         }}
