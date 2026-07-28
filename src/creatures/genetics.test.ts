@@ -133,8 +133,8 @@ describe("Genetics Domain Logic", () => {
       it("the child should always have both parent's alleles in the genotypes", () => {
         for(let i = 0; i < 100; i++) {
           const child = breed(genotypeA, genotypeB);
-          expect(child.A).toBe(['A', 'a']);
-          expect(child.B).toBe(['B', 'b']);
+          expect(child.A).toStrictEqual(['A', 'a']);
+          expect(child.B).toStrictEqual(['B', 'b']);
         }
       });    
     });
@@ -145,8 +145,8 @@ describe("Genetics Domain Logic", () => {
       it("the child genotype should only have dominant alleles", () => {
         for(let i = 0; i < 100; i++) {
           const child = breed(genotypeA, genotypeB);
-          expect(child.A).toBe(['A', 'A']);
-          expect(child.B).toBe(['B', 'B']);
+          expect(child.A).toStrictEqual(['A', 'A']);
+          expect(child.B).toStrictEqual(['B', 'B']);
         }
       });
     });
@@ -157,8 +157,8 @@ describe("Genetics Domain Logic", () => {
       it("the child genotype should only have recessive alleles", () => {
         for(let i = 0; i < 100; i++) {
           const child = breed(genotypeA, genotypeB);
-          expect(child.A).toBe(['a', 'a']);
-          expect(child.B).toBe(['b', 'b']);
+          expect(child.A).toStrictEqual(['a', 'a']);
+          expect(child.B).toStrictEqual(['b', 'b']);
         }
       });
     });

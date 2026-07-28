@@ -150,9 +150,10 @@ export function punnett(topGenotype: Genotype, sideGenotype: Genotype): PunnettG
   }
 }
 
-/** TODO: produce an offspring genotype from two parents. */
-export function breed(a: Genotype, b: Genotype): never {
-  void a;
-  void b;
-  throw new Error('breed() not implemented — genetics domain is a placeholder');
+export function breed(genotypeA: Genotype, genotypeB: Genotype): Genotype {
+  const pun = punnett(genotypeA, genotypeB);
+  return pun.at(
+    Math.floor(Math.random() * 4),
+    Math.floor(Math.random() * 4) 
+  );
 }
