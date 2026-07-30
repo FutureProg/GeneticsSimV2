@@ -59,23 +59,23 @@ export function PunnettOverlay({ parentA, parentB, generation = 'F1', onClose, o
             <span className="generation-code">{generation}</span>
             <span>{parentAGenotype} × {parentBGenotype}</span>
           </h2>
-          {cols.map(col => (            
-            <div key={`col-icon-${col}`} className="punnett-axis">
+          {cols.map((col, idx) => (            
+            <div key={`col-icon-${col}-${idx}`} className="punnett-axis">
               {"icon"}
             </div>
           ))}                    
-          {cols.map(col => (            
-            <div key={`col-${col}`} className="punnett-axis">
+          {cols.map((col, idx) => (            
+            <div key={`col-${col}-${idx}`} className="punnett-axis">
               {col}
             </div>
           ))}
           
           {rows.map((row, rowIndex) => (
-            <Fragment key={`row-${row}`}>
+            <Fragment key={`row-${row}-${rowIndex}`}>
               <div className="punnett-axis">{"icon"}</div>
               <div className="punnett-axis">{row}</div>              
               {cols.map((col, colIndex) => (
-                <div key={`${row}-${col}`} className="punnett-cell">
+                <div key={`${row}-${col}-${rowIndex}-${colIndex}`} className="punnett-cell">
                   {genotypeString(punnettValues.at(rowIndex, colIndex))}
                 </div>
               ))}
