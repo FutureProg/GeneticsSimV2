@@ -17,13 +17,16 @@ type BlobData = PhysicsBody & {
   creature: Creature;
   element: HTMLDivElement;
   selected: boolean;
-  initialized: boolean;
 };
 
 export type BlobSimulation = {
   /** Attach to the container that bounds the blobs. */
   containerRef: React.RefObject<HTMLDivElement | null>;
-  /** Ref callback for each blob's wrapper element. */
+  /**
+   * Registers the blob and its rendered representation with the simulation
+   * @param creature the creature to register the blob with
+   * @param element the HTML element the blob is represented by
+   */
   registerBlob: (creature: Creature, element: HTMLDivElement | null) => void;
   /** Toggle a creature's selected state (max two selected at once). */
   toggleSelect: (id: string) => void;
@@ -37,6 +40,8 @@ export type BlobSimulation = {
   getSelectedBlobs: () => BlobData[];
   /** Remove all of the blobs from the simulation **/
   clearBlobs(): void;
+  /** True once the container has been measured, so bounds reflect its real size. */
+  ready: boolean;
 };
 
 /**
@@ -52,6 +57,7 @@ export function useBlobSimulation(): BlobSimulation {
   const lastTime = useRef<number | null>(null);
   const frame = useRef<number | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [ready, setReady] = useState(false);
   const paused = useRef(false); 
   const togglePaused = (value?: boolean) => {    
     paused.current = value ?? !paused.current;      
@@ -98,17 +104,19 @@ export function useBlobSimulation(): BlobSimulation {
       }
       const pheno = renderPhenotypes(creature, element);
       const scale = pheno.scale ?? 1;
+      const size = BLOB_SIZE * scale;
+      const pos = randomPosition(bounds.current, size);
       const data: BlobData = {
         creature,
         element,
         selected: false,
-        initialized: false,
-        x: 0, y: 0,
-        size: BLOB_SIZE * scale,
+        x: pos.x, y: pos.y,
+        size,
         ...randomHeading(),
       };
       blobs.current.set(creature.id, data);
-      renderPhenotypes(creature, element);
+      setBlobPosition(element, pos.x, pos.y);
+      element.classList.add('visible');
     },
     [],
   );
@@ -149,17 +157,7 @@ export function useBlobSimulation(): BlobSimulation {
     if (!container) return;
 
     bounds.current = { width: container.clientWidth, height: container.clientHeight };
-
-    for (const blob of blobs.current.values()) {
-      if (!blob.initialized) {
-        const pos = randomPosition(bounds.current, blob.size);
-        blob.x = pos.x;
-        blob.y = pos.y;
-        blob.initialized = true;
-        setBlobPosition(blob.element, pos.x, pos.y);        
-        blob.element.classList.add('visible');
-      }
-    }
+    setReady(true);
 
     const observer = new ResizeObserver(entries => {
       for (const entry of entries) {
@@ -221,5 +219,5 @@ export function useBlobSimulation(): BlobSimulation {
     };
   }, []);
 
-  return { containerRef, clearBlobs, registerBlob, toggleSelect, clearSelection, togglePaused, selectedIds, getSelectedBlobs };
+  return { containerRef, clearBlobs, registerBlob: registerBlob, toggleSelect, clearSelection, togglePaused, selectedIds, getSelectedBlobs, ready };
 }

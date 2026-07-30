@@ -35,8 +35,13 @@ const INITIAL_CREATURES: Creature[] = [
 function App() {
   const sim = useBlobSimulation();
   const [punnettOpen, setPunnettOpen] = useState(false);
-  const [creatures, setCreatures] = useState(INITIAL_CREATURES);
+  const [creatures, setCreatures] = useState<Creature[]>(INITIAL_CREATURES);
   const canAct = sim.selectedIds.length === 2;
+
+  // Withhold creatures from the field until the container has been measured,
+  // so their initial positions are computed from its real bounds rather than
+  // a window-sized fallback (see useBlobSimulation's `bounds` ref).
+  const visibleCreatures = sim.ready ? creatures : [];
 
   const togglePunnett = (value?: boolean) => {
     setPunnettOpen(value ?? !punnettOpen);
@@ -55,7 +60,7 @@ function App() {
 
   return (
     <main>
-      <BlobField creatures={creatures} sim={sim} />
+      <BlobField creatures={visibleCreatures} sim={sim} />
       {punnettOpen && sim.selectedIds.length === 2 && (
         <PunnettOverlay
           onBreed={onBreed}
