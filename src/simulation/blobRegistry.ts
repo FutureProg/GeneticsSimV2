@@ -18,6 +18,8 @@ export type BlobData = PhysicsBody & {
   creature: Creature;
   element: HTMLDivElement;
   selected: boolean;
+  /** Tracked via pointer events rather than re-matching `:hover` every frame. */
+  hovered: boolean;
 };
 
 export function createBlobRegistry() {
@@ -47,6 +49,7 @@ export function createBlobRegistry() {
       creature,
       element,
       selected: false,
+      hovered: false,
       size,
       x: pos.x,
       y: pos.y,
@@ -78,6 +81,11 @@ export function createBlobRegistry() {
     });
   };
 
+  const setHovered = (id: string, hovered: boolean): void => {
+    const data = blobs.get(id);
+    if (data) data.hovered = hovered;
+  };
+
   return {
     values: () => [...blobs.values()],
     getSelected: () => [...blobs.values()].filter(b => b.selected),
@@ -85,6 +93,7 @@ export function createBlobRegistry() {
     register,
     toggleSelect,
     clearSelection,
+    setHovered,
     clear: () => blobs.clear(),
   };
 }

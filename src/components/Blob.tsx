@@ -8,11 +8,12 @@ type Props = {
   creature: Creature;
   onSelect: (id: string) => void;
   registerBlob: (creature: Creature, element: HTMLDivElement | null) => void;
+  setHovered: (id: string, hovered: boolean) => void;
 };
 
 type PopoverElement = HTMLElement & { showPopover(): void; hidePopover(): void };
 
-export function Blob({ creature, onSelect, registerBlob }: Props) {
+export function Blob({ creature, onSelect, registerBlob, setHovered }: Props) {
   const bubbleId = `allele-${creature.id}`;
   const anchorName = `--blob-${creature.id}`;
 
@@ -30,8 +31,8 @@ export function Blob({ creature, onSelect, registerBlob }: Props) {
       className="blob"
       ref={el => registerBlob(creature, el)}
       style={{ anchorName } as React.CSSProperties}
-      onMouseEnter={showBubble}
-      onMouseLeave={hideBubble}
+      onMouseEnter={() => { showBubble(); setHovered(creature.id, true); }}
+      onMouseLeave={() => { hideBubble(); setHovered(creature.id, false); }}
       onFocus={showBubble}
       onBlur={hideBubble}
       onClick={() => onSelect(creature.id)}

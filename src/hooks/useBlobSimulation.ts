@@ -15,6 +15,8 @@ export type BlobSimulation = {
   registerBlob: (creature: Creature, element: HTMLDivElement | null) => void;
   /** Toggle a creature's selected state (max two selected at once). */
   toggleSelect: (id: string) => void;
+  /** Track pointer hover for a blob, so the physics loop can freeze it. */
+  setBlobHovered: (id: string, hovered: boolean) => void;
   /** Deselect all creatures. */
   clearSelection: () => void;
   /** Ids of the currently selected parents (0–2). React state, updated on click. */
@@ -77,11 +79,16 @@ export function useBlobSimulation(): BlobSimulation {
 
   const getSelectedBlobs = useCallback(() => registry.getSelected(), [registry]);
   const clearBlobs = useCallback(() => registry.clear(), [registry]);
+  const setBlobHovered = useCallback(
+    (id: string, hovered: boolean) => registry.setHovered(id, hovered),
+    [registry],
+  );
 
   return {
     containerRef,
     registerBlob,
     toggleSelect,
+    setBlobHovered,
     clearSelection,
     togglePaused,
     selectedIds,

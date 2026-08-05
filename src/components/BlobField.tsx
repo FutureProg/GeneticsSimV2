@@ -12,7 +12,7 @@ type Props = {
  * hands each its ref to the simulation; the rAF loop in the hook moves them.
  */
 export function BlobField({ creatures, sim }: Props) {
-  const { containerRef, toggleSelect, clearSelection, registerBlob } = sim;
+  const { containerRef, toggleSelect, clearSelection, registerBlob, setBlobHovered: setHovered } = sim;
   return (
     <div
       id="blob-pool"
@@ -25,6 +25,7 @@ export function BlobField({ creatures, sim }: Props) {
           creature={creature}
           onSelect={toggleSelect}
           registerBlob={registerBlob}
+          setHovered={setHovered}
         />
       ))}
     </div>

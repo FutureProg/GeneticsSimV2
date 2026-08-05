@@ -54,7 +54,7 @@ export function useSimulationLoop(
       // still. Mark them immovable so collisions treat them as infinite mass and
       // never drift their stored position out of sync with where they're drawn.
       for (const blob of list)
-        blob.immovable = blob.selected || blob.element.matches(':hover');
+        blob.immovable = blob.selected || blob.hovered;
 
       for (let i = 0; i < list.length; i++)
         for (let j = i + 1; j < list.length; j++)
