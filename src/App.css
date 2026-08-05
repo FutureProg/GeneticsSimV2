@@ -77,6 +77,11 @@ button {
     cursor: pointer;
     opacity: 0;
     transition: opacity 300ms ease;
+    /* Contains .blob-overlay's mix-blend-mode to just this blob's own art
+       instead of the whole page's paint order — without this, every moving
+       blob forces the browser to recomposite everything beneath it each
+       frame instead of just itself. */
+    isolation: isolate;
     /* --creature-x/y are the centre in real px; -50% recentres the box*/
     transform: translate(var(--creature-x, 0), var(--creature-y, 0)) translate(-50%, -50%);
     &.visible {
