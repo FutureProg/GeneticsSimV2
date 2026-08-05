@@ -36,6 +36,18 @@ export function useSimulationLoop(
 
     let lastTime: number | null = null;
     let frame: number | null = null;
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    const startLoop = () => {
+      if (frame != null) return;
+      lastTime = null;
+      frame = requestAnimationFrame(render);
+    };
+    const stopLoop = () => {
+      if (frame != null) cancelAnimationFrame(frame);
+      frame = null;
+      lastTime = null;
+    };
 
     const render = (currentTime: number) => {
       if (pausedRef.current) {
@@ -68,22 +80,26 @@ export function useSimulationLoop(
       }
       frame = requestAnimationFrame(render);
     };
-    frame = requestAnimationFrame(render);
+    // Reduced-motion users get their static starting layout and nothing more —
+    // no rAF loop running at all, rather than one that ticks and does nothing.
+    if (!motionQuery.matches) startLoop();
 
     const handleVisibility = () => {
-      if (document.hidden) {
-        if (frame != null) cancelAnimationFrame(frame);
-        frame = null;
-        lastTime = null;
-      } else {
-        frame = requestAnimationFrame(render);
-      }
+      if (document.hidden) stopLoop();
+      else if (!motionQuery.matches) startLoop();
     };
     document.addEventListener('visibilitychange', handleVisibility);
+
+    const handleMotionChange = () => {
+      if (motionQuery.matches) stopLoop();
+      else if (!document.hidden) startLoop();
+    };
+    motionQuery.addEventListener('change', handleMotionChange);
 
     return () => {
       observer.disconnect();
       document.removeEventListener('visibilitychange', handleVisibility);
+      motionQuery.removeEventListener('change', handleMotionChange);
       if (frame != null) cancelAnimationFrame(frame);
     };
   }, [containerRef, registry, boundsRef, pausedRef]);
